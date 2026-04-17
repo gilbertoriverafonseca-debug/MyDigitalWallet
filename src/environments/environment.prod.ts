@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  FirebaseConfig: {
+  firebase: {
     apiKey: "AIzaSyCfb3LXjr9oLy5HbhtFncpb84pOfrOMUbw",
     authDomain: "mydigitalwallet-d3e07.firebaseapp.com",
     projectId: "mydigitalwallet-d3e07",
@@ -8,9 +8,9 @@ export const environment = {
     messagingSenderId: "711544624827",
     appId: "1:711544624827:web:e47779728e3ed630437b9e"
   },
-    notificationsBackend: {
+  notificationsBackend: {
     baseUrl: 'https://sendnotificationfirebase-production.up.railway.app',
-    email: '@unicolombo.edu.co',
-    password: '',
+    email: 'user@unicolombo.edu.co',
+    password: 'password123',
   },
 };
