@@ -1,0 +1,209 @@
+ion-content {
+  --background: #F8F9FD;
+}
+
+// ===== Section Header =====
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 20px 0 10px;
+    color: #1a1a2e;
+    letter-spacing: -0.3px;
+  }
+
+  .card-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: #A4B0BE;
+    background: rgba(108, 92, 231, 0.08);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 10px;
+  }
+}
+
+// ===== Empty State =====
+.empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: #A4B0BE;
+
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
+    background: rgba(108, 92, 231, 0.08);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 36px;
+      color: #6C5CE7;
+    }
+  }
+
+  p {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  ion-button {
+    --background: linear-gradient(135deg, #6C5CE7, #a29bfe);
+    --border-radius: 14px;
+    --box-shadow: 0 8px 24px rgba(108, 92, 231, 0.3);
+    height: 48px;
+    font-weight: 700;
+  }
+}
+
+// ===== Card List =====
+@keyframes cardSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(60px) scale(0.92);
+  }
+  60% { opacity: 1; }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.methods-list {
+  padding: 0 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  perspective: 1000px;
+
+  .method-item {
+    opacity: 0;
+    animation: cardSlideUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    transform-origin: center bottom;
+  }
+}
+
+// ===== Card Action Chips =====
+.card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 0 8px;
+}
+
+.action-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.2px;
+
+  ion-icon {
+    font-size: 15px;
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &.edit {
+    background: rgba(108, 92, 231, 0.1);
+    color: #6C5CE7;
+  }
+
+  &.add-funds {
+    background: rgba(0, 184, 148, 0.1);
+    color: #00B894;
+  }
+
+  &.delete {
+    background: rgba(255, 107, 107, 0.1);
+    color: #FF6B6B;
+  }
+}
+
+// ===== Edit/Recharge Modal Sheet =====
+.edit-sheet {
+  padding: 24px;
+
+  h3 {
+    margin: 0 0 20px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a2e;
+    text-align: center;
+  }
+
+  .current-balance {
+    text-align: center;
+    color: #A4B0BE;
+    font-size: 14px;
+    margin: -8px 0 16px;
+
+    strong {
+      color: #00B894;
+      font-weight: 700;
+    }
+  }
+
+  ion-list {
+    background: transparent;
+
+    ion-item {
+      --background: #F1F2F6;
+      --border-radius: 14px;
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --border-color: transparent;
+    }
+  }
+
+  .quick-amounts {
+    display: flex;
+    gap: 8px;
+    margin: 14px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .quick-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 2px solid rgba(0, 184, 148, 0.2);
+    background: transparent;
+    color: #00B894;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:active {
+      background: rgba(0, 184, 148, 0.12);
+      transform: scale(0.95);
+    }
+  }
+
+  .save-btn {
+    --background: linear-gradient(135deg, #6C5CE7, #a29bfe);
+    --border-radius: 14px;
+    --box-shadow: 0 8px 24px rgba(108, 92, 231, 0.3);
+    height: 50px;
+    font-weight: 700;
+    margin-top: 16px;
+  }
+}

@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Historial de Movimientos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="resetFilters()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="summary">
+    <small>Total del periodo</small>
+    <h2>${{ (totalExpense$ | async) | number:'1.0-0' }}</h2>
+  </div>
+
+  <ion-list lines="none" class="filters">
+    <ion-item>
+      <ion-select
+        label="Método de Pago"
+        labelPlacement="stacked"
+        placeholder="Todos"
+        (ionChange)="handleMethodChange($any($event))">
+        <ion-select-option value="">Todos</ion-select-option>
+        <ion-select-option *ngFor="let m of paymentMethods$ | async" [value]="m.id">
+          {{ m.paymentNetwork | uppercase }} •••• {{ m.cardTail }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <app-date-selector
+        label="Fecha"
+        (dateChanged)="handleDateChange($event)">
+      </app-date-selector>
+    </ion-item>
+  </ion-list>
+
+  <app-record-list
+    [recordsList]="(filteredRecords$ | async) ?? []"
+    (recordLongPressed)="openReactionPicker($event)">
+  </app-record-list>
+</ion-content>
+
+<ion-modal
+  [isOpen]="!!selectedRecordForReaction"
+  (didDismiss)="closeReactionPicker()"
+  [initialBreakpoint]="0.4"
+  [breakpoints]="[0, 0.4]">
+  <ng-template>
+    <div class="reaction-sheet">
+      <h3>Reacciona al Movimiento</h3>
+      <div class="reaction-grid">
+        <button
+          *ngFor="let r of quickReactions"
+          class="reaction-btn"
+          (click)="applyReaction(r)">
+          {{ r }}
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

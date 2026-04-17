@@ -1,0 +1,138 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>MyDigitalWallet</ion-title>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="biometryAvailable" (click)="handleBiometryToggle()">
+        <ion-icon
+          slot="icon-only"
+          [name]="biometryEnabled ? 'finger-print' : 'finger-print-outline'">
+        </ion-icon>
+      </ion-button>
+      <ion-button (click)="handleLogout()">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-funds-display
+    [clientName]="displayName$ | async"
+    [totalFunds]="totalBalance$ | async"
+    [isVisible]="showBalance"
+    (onToggle)="handleBalanceToggle()">
+  </app-funds-display>
+
+  <app-main-actions
+    [actionList]="mainActions"
+    (actionTriggered)="handleMainAction($event)">
+  </app-main-actions>
+
+  <div class="section-header ion-padding-horizontal">
+    <h3>Mis Métodos de Pago</h3>
+    <span class="card-count" *ngIf="paymentMethods$ | async as m">{{ m.length }} tarjeta{{ m.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <ng-container *ngIf="paymentMethods$ | async as methods; else loadingTpl">
+    <div *ngIf="methods.length === 0" class="empty">
+      <div class="empty-icon">
+        <ion-icon name="card-outline"></ion-icon>
+      </div>
+      <p>Aún no tienes métodos de pago registrados</p>
+      <ion-button (click)="navigateToAddPayment()">Agregar Método</ion-button>
+    </div>
+
+    <div class="methods-list" *ngIf="methods.length > 0">
+      <div
+        class="method-item"
+        *ngFor="let m of methods; let i = index; trackBy: trackByMethodId"
+        [style.animation-delay]="i * 120 + 'ms'">
+        <app-payment-card
+          [paymentData]="m"
+          [hideBalance]="!showBalance"
+          [enableTilt]="true">
+        </app-payment-card>
+        <div class="card-actions">
+          <button class="action-chip edit" (click)="openEditModal(m)">
+            <ion-icon name="create-outline"></ion-icon>
+            <span>Editar</span>
+          </button>
+          <button class="action-chip add-funds" (click)="openAddFundsModal(m)">
+            <ion-icon name="wallet-outline"></ion-icon>
+            <span>Recargar</span>
+          </button>
+          <button class="action-chip delete" (click)="handleDeletePayment(m)">
+            <ion-icon name="trash-outline"></ion-icon>
+            <span>Eliminar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #loadingTpl>
+    <app-loading-placeholder variant="card" [itemCount]="2"></app-loading-placeholder>
+  </ng-template>
+</ion-content>
+
+<!-- ===== MODAL: Editar Tarjeta ===== -->
+<ion-modal
+  [isOpen]="!!editingPayment"
+  (didDismiss)="closeEditModal()"
+  [initialBreakpoint]="0.45"
+  [breakpoints]="[0, 0.45]">
+  <ng-template>
+    <div class="edit-sheet" *ngIf="editingPayment">
+      <h3>Editar Tarjeta •••• {{ editingPayment.cardTail }}</h3>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-input
+            label="Nombre del titular"
+            labelPlacement="stacked"
+            [(ngModel)]="editFormName"
+            autocapitalize="characters"
+            placeholder="NOMBRE APELLIDO">
+          </ion-input>
+        </ion-item>
+      </ion-list>
+      <ion-button expand="block" (click)="saveEdit()" class="save-btn">
+        <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+        Guardar Cambios
+      </ion-button>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<!-- ===== MODAL: Recargar Saldo ===== -->
+<ion-modal
+  [isOpen]="!!rechargingPayment"
+  (didDismiss)="closeAddFundsModal()"
+  [initialBreakpoint]="0.45"
+  [breakpoints]="[0, 0.45]">
+  <ng-template>
+    <div class="edit-sheet" *ngIf="rechargingPayment">
+      <h3>Recargar •••• {{ rechargingPayment.cardTail }}</h3>
+      <p class="current-balance">Saldo actual: <strong>${{ rechargingPayment.availableBalance | number:'1.0-0' }}</strong></p>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-input
+            type="number"
+            label="Monto a recargar (COP)"
+            labelPlacement="stacked"
+            [(ngModel)]="rechargeAmount"
+            placeholder="50000">
+          </ion-input>
+        </ion-item>
+      </ion-list>
+      <div class="quick-amounts">
+        <button *ngFor="let a of quickRechargeAmounts" class="quick-btn" (click)="rechargeAmount = a">
+          ${{ a | number:'1.0-0' }}
+        </button>
+      </div>
+      <ion-button expand="block" (click)="saveRecharge()" class="save-btn" [disabled]="!rechargeAmount || rechargeAmount <= 0">
+        <ion-icon name="flash-outline" slot="start"></ion-icon>
+        Recargar
+      </ion-button>
+    </div>
+  </ng-template>
+</ion-modal>

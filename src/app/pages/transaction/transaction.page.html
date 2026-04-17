@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Realizar Transacción</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ng-container *ngIf="paymentMethods$ | async as methods">
+    <div *ngIf="methods.length === 0" class="empty">
+      <div class="empty-icon">
+        <ion-icon name="card-outline"></ion-icon>
+      </div>
+      <p>No tienes métodos de pago registrados</p>
+      <ion-button routerLink="/add-payment-method">Agregar Método</ion-button>
+    </div>
+
+    <form *ngIf="methods.length > 0" [formGroup]="formData" (ngSubmit)="handleSubmit()">
+      <div class="card-preview-area" *ngIf="selectedPayment">
+        <app-payment-card [paymentData]="selectedPayment" [hideBalance]="false" [enableTilt]="true"></app-payment-card>
+      </div>
+
+      <div class="no-card-hint" *ngIf="!selectedPayment">
+        <ion-icon name="hand-left-outline"></ion-icon>
+        <p>Selecciona un método de pago</p>
+      </div>
+
+      <ion-list lines="none" class="form-list">
+        <ion-item>
+          <ion-select
+            label="Método de Pago"
+            labelPlacement="stacked"
+            placeholder="Selecciona un método"
+            formControlName="paymentMethodId">
+            <ion-select-option *ngFor="let m of methods" [value]="m.id">
+              {{ m.paymentNetwork | uppercase }} •••• {{ m.cardTail }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            label="Proveedor"
+            labelPlacement="stacked"
+            placeholder="Ej: Amazon"
+            formControlName="vendor">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            type="number"
+            label="Monto (COP)"
+            labelPlacement="stacked"
+            placeholder="10000"
+            formControlName="transactionAmount">
+          </ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="block" fill="outline" (click)="handleRandomize()" type="button" class="randomize-btn">
+        <ion-icon name="shuffle-outline" slot="start"></ion-icon>
+        Simular Proveedor
+      </ion-button>
+
+      <ion-button expand="block" type="submit" [disabled]="formData.invalid" class="transaction-btn">
+        <ion-icon name="flash-outline" slot="start"></ion-icon>
+        Transaccionar
+      </ion-button>
+    </form>
+  </ng-container>
+</ion-content>

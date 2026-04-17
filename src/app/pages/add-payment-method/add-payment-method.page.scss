@@ -1,0 +1,110 @@
+ion-content {
+  --background: #F8F9FD;
+}
+
+// === Card Preview Stage ===
+.preview-stage {
+  position: relative;
+  padding: 8px 4px 32px;
+  perspective: 1000px;
+}
+
+.card-spotlight {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 260px;
+  height: 160px;
+  background: radial-gradient(ellipse, rgba(108, 92, 231, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(20px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.preview-card {
+  position: relative;
+  z-index: 1;
+  animation: cardFloat 4s ease-in-out infinite;
+
+  &.has-data {
+    animation: cardFloat 3s ease-in-out infinite;
+  }
+}
+
+// === Form ===
+ion-list {
+  background: transparent;
+
+  ion-item {
+    --background: #fff;
+    --border-radius: 14px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 12px rgba(108, 92, 231, 0.06);
+    --border-color: transparent;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+    &.item-has-focus {
+      box-shadow: 0 4px 20px rgba(108, 92, 231, 0.15);
+      transform: scale(1.01);
+    }
+  }
+}
+
+.network-badge {
+  display: flex;
+  justify-content: flex-start;
+  padding: 0 4px 10px;
+
+  .badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #fff;
+    animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &.visa {
+      background: linear-gradient(135deg, #1a1f71, #4361ee);
+    }
+
+    &.mc {
+      background: linear-gradient(135deg, #cc2229, #f79e1b);
+    }
+  }
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.row-fields {
+  display: flex;
+  gap: 10px;
+
+  .half {
+    flex: 1;
+  }
+}
+
+.save-btn {
+  --background: linear-gradient(135deg, #6C5CE7, #a29bfe);
+  --border-radius: 16px;
+  --box-shadow: 0 10px 30px rgba(108, 92, 231, 0.35);
+  height: 56px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 24px;
+  letter-spacing: 0.3px;
+}

@@ -1,0 +1,117 @@
+ion-content {
+  --background: #F8F9FD;
+}
+
+// === Card area ===
+@keyframes fadeSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card-preview-area {
+  margin-bottom: 24px;
+  padding: 0 4px;
+  animation: fadeSlideDown 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.no-card-hint {
+  text-align: center;
+  padding: 36px 20px;
+  color: #A4B0BE;
+
+  ion-icon {
+    font-size: 40px;
+    opacity: 0.4;
+    display: block;
+    margin: 0 auto 10px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+// === Form ===
+.form-list {
+  background: transparent;
+  margin-bottom: 16px;
+
+  ion-item {
+    --background: #fff;
+    --border-radius: 14px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(108, 92, 231, 0.06);
+    --border-color: transparent;
+    transition: box-shadow 0.3s ease;
+
+    &.item-has-focus {
+      box-shadow: 0 4px 20px rgba(108, 92, 231, 0.15);
+    }
+  }
+}
+
+.randomize-btn {
+  --border-radius: 14px;
+  --border-width: 2px;
+  --border-color: #6C5CE7;
+  --color: #6C5CE7;
+  height: 48px;
+  font-weight: 600;
+}
+
+.transaction-btn {
+  --background: linear-gradient(135deg, #6C5CE7, #a29bfe);
+  --border-radius: 16px;
+  --box-shadow: 0 10px 30px rgba(108, 92, 231, 0.35);
+  height: 56px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 12px;
+  letter-spacing: 0.3px;
+}
+
+// === Empty ===
+.empty {
+  text-align: center;
+  padding: 60px 24px;
+  color: #A4B0BE;
+
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
+    background: rgba(108, 92, 231, 0.08);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 36px;
+      color: #6C5CE7;
+    }
+  }
+
+  p {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  ion-button {
+    --background: linear-gradient(135deg, #6C5CE7, #a29bfe);
+    --border-radius: 14px;
+    height: 48px;
+    font-weight: 700;
+  }
+}
