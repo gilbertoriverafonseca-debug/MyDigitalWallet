@@ -43,6 +43,10 @@ export class AddPaymentMethodPage {
     };
   }
 
+  goBack(): void {
+    this.router.navigateByUrl('/dashboard');
+  }
+
   onCardNumberInput(event: Event): void {
     const target = event.target as HTMLInputElement;
     const formatted = PaymentMethodService.formatCardNumber(target.value);
@@ -85,11 +89,4 @@ export class AddPaymentMethodPage {
     }
   }
 
-  private async displayMessage(message: string, type: 'success' | 'danger'): Promise<void> {
-    if (type === 'success') {
-      await this.messageSvc.success(message);
-    } else {
-      await this.messageSvc.error(message);
-    }
-  }
 }

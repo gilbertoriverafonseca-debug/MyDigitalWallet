@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PaymentMethodService } from '../../core/services/payment-method.service';
@@ -19,8 +20,10 @@ export class MovementHistoryPage {
   private paymentMethodService = inject(PaymentMethodService);
   private transactionService = inject(TransactionService);
   private messageSvc = inject(MessageService);
+  private router = inject(Router);
 
   quickReactions = QUICK_REACTIONS;
+  selectedMethodId = '';
 
   private methodFilter$ = new BehaviorSubject<string>('');
   private dateFilter$ = new BehaviorSubject<string>('');
@@ -52,8 +55,9 @@ export class MovementHistoryPage {
     map((records) => records.reduce((acc, r) => acc + r.transactionAmount, 0))
   );
 
-  handleMethodChange(ev: CustomEvent): void {
-    this.methodFilter$.next((ev.detail.value as string) ?? '');
+  applyMethodFilter(id: string): void {
+    this.selectedMethodId = id;
+    this.methodFilter$.next(id);
   }
 
   handleDateChange(dateValue: string): void {
@@ -61,8 +65,13 @@ export class MovementHistoryPage {
   }
 
   resetFilters(): void {
+    this.selectedMethodId = '';
     this.methodFilter$.next('');
     this.dateFilter$.next('');
+  }
+
+  goBack(): void {
+    this.router.navigateByUrl('/dashboard');
   }
 
   openReactionPicker(record: FinancialRecord): void {
@@ -78,7 +87,7 @@ export class MovementHistoryPage {
     try {
       await this.transactionService.attachReactionEmoji(this.selectedRecordForReaction.id, reaction);
       await this.messageSvc.success('Reacción guardada');
-    } catch (e: unknown) {
+    } catch {
       await this.messageSvc.error('No se pudo guardar la reacción');
     } finally {
       this.closeReactionPicker();

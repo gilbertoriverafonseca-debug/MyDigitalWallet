@@ -1,76 +1,129 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/dashboard"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Agregar Método de Pago</ion-title>
+<ion-header class="ion-no-border card-add-header">
+  <ion-toolbar>
+    <div class="header-inner">
+      <button class="back-btn" type="button" (click)="goBack()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <span class="header-title">Nueva Tarjeta</span>
+      <div class="header-spacer"></div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="preview-stage">
-    <div class="card-spotlight"></div>
-    <div class="preview-card" [class.has-data]="formData.controls.cardNumber.value.length > 0">
-      <app-payment-card
-        [paymentData]="previewPayment"
-        [hideBalance]="true"
-        [enableTilt]="true"
-        [animateEntry]="false">
-      </app-payment-card>
+<ion-content>
+
+  <!-- ══════ CARD PREVIEW HERO ══════ -->
+  <div class="card-hero">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+
+    <p class="hero-hint">Así se verá tu tarjeta</p>
+
+    <div class="preview-stage">
+      <div class="preview-card" [class.has-data]="formData.controls.cardNumber.value.length > 0">
+        <app-payment-card
+          [paymentData]="previewPayment"
+          [hideBalance]="true"
+          [enableTilt]="true"
+          [animateEntry]="false">
+        </app-payment-card>
+      </div>
     </div>
   </div>
 
-  <form [formGroup]="formData" (ngSubmit)="handleSubmit()">
-    <ion-list lines="none">
-      <ion-item>
-        <ion-label position="stacked">Titular de la tarjeta</ion-label>
-        <ion-input formControlName="cardholderName" autocapitalize="characters" placeholder="NOMBRE APELLIDO"></ion-input>
-      </ion-item>
+  <!-- ══════ FORM SHEET ══════ -->
+  <div class="sheet">
+    <form [formGroup]="formData" (ngSubmit)="handleSubmit()">
 
-      <ion-item>
-        <ion-label position="stacked">Número de tarjeta</ion-label>
-        <ion-input
-          type="tel"
-          inputmode="numeric"
-          formControlName="cardNumber"
-          (ionInput)="onCardNumberInput($event)"
-          maxlength="23"
-          placeholder="1234 5678 9012 3456">
-        </ion-input>
-      </ion-item>
-
-      <div class="network-badge" *ngIf="detectedNetwork !== 'unknown'">
-        <span class="badge" [class.visa]="detectedNetwork === 'visa'" [class.mc]="detectedNetwork === 'mastercard'">
-          {{ detectedNetwork | uppercase }}
-        </span>
+      <!-- Titular -->
+      <div class="field-group">
+        <label class="field-label">Titular de la tarjeta</label>
+        <div class="field-row">
+          <div class="field-icon">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <input
+            class="field-input"
+            type="text"
+            placeholder="NOMBRE APELLIDO"
+            autocapitalize="characters"
+            formControlName="cardholderName">
+        </div>
       </div>
 
-      <div class="row-fields">
-        <ion-item class="half">
-          <ion-label position="stacked">Vencimiento</ion-label>
-          <ion-input
+      <!-- Número de tarjeta -->
+      <div class="field-group">
+        <label class="field-label">Número de tarjeta</label>
+        <div class="field-row" [class.net-visa]="detectedNetwork === 'visa'" [class.net-mc]="detectedNetwork === 'mastercard'">
+          <div class="field-icon">
+            <ion-icon name="card-outline"></ion-icon>
+          </div>
+          <input
+            class="field-input mono"
             type="tel"
             inputmode="numeric"
-            formControlName="expirationFormat"
-            (ionInput)="onExpirationInput($event)"
-            maxlength="5"
-            placeholder="MM/YY">
-          </ion-input>
-        </ion-item>
-
-        <ion-item class="half">
-          <ion-label position="stacked">CVV</ion-label>
-          <ion-input type="tel" inputmode="numeric" formControlName="securityCode" maxlength="4" placeholder="•••"></ion-input>
-        </ion-item>
+            placeholder="1234 5678 9012 3456"
+            maxlength="23"
+            formControlName="cardNumber"
+            (input)="onCardNumberInput($event)">
+          <div class="network-pill" *ngIf="detectedNetwork !== 'unknown'"
+            [class.visa]="detectedNetwork === 'visa'"
+            [class.mc]="detectedNetwork === 'mastercard'">
+            {{ detectedNetwork | uppercase }}
+          </div>
+        </div>
       </div>
-    </ion-list>
 
-    <ion-button expand="block" type="submit" [disabled]="isProcessing" class="save-btn">
-      <ion-spinner *ngIf="isProcessing" name="crescent"></ion-spinner>
-      <ng-container *ngIf="!isProcessing">
-        <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
-        Guardar Método
-      </ng-container>
-    </ion-button>
-  </form>
+      <!-- Vencimiento + CVV -->
+      <div class="field-row-split">
+        <div class="field-group">
+          <label class="field-label">Vencimiento</label>
+          <div class="field-row">
+            <div class="field-icon">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <input
+              class="field-input mono"
+              type="tel"
+              inputmode="numeric"
+              placeholder="MM/YY"
+              maxlength="5"
+              formControlName="expirationFormat"
+              (input)="onExpirationInput($event)">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">CVV</label>
+          <div class="field-row">
+            <div class="field-icon">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+            </div>
+            <input
+              class="field-input mono"
+              type="tel"
+              inputmode="numeric"
+              placeholder="•••"
+              maxlength="4"
+              formControlName="securityCode">
+          </div>
+        </div>
+      </div>
+
+      <!-- Save -->
+      <button
+        class="save-btn"
+        type="submit"
+        [disabled]="isProcessing || formData.invalid">
+        <ion-spinner *ngIf="isProcessing" name="crescent"></ion-spinner>
+        <ng-container *ngIf="!isProcessing">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Guardar Tarjeta</span>
+        </ng-container>
+      </button>
+
+    </form>
+  </div>
+
 </ion-content>

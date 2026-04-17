@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AuthenticationService } from '../../core/services/authentication.service';
 import { PaymentMethodService } from '../../core/services/payment-method.service';
@@ -9,7 +9,9 @@ import { SecurityService } from '../../core/services/security.service';
 import { DatabaseService } from '../../core/services/database.service';
 import { MessageService } from '../../core/services/message.service';
 import { AlertService } from '../../core/services/alert.service';
+import { TransactionService } from '../../core/services/transaction.service';
 import { PaymentMethod } from '../../core/models/payment.model';
+import { FinancialRecord } from '../../core/models/movement.model';
 
 interface MainAction {
   key: string;
@@ -32,10 +34,12 @@ export class DashboardPage implements OnInit {
   private databaseSvc = inject(DatabaseService);
   private messageSvc = inject(MessageService);
   private alertSvc = inject(AlertService);
+  private transactionSvc = inject(TransactionService);
 
   showBalance = true;
   biometryAvailable = false;
   biometryEnabled = false;
+  selectedCard: PaymentMethod | null = null;
 
   // Edit modal
   editingPayment: PaymentMethod | null = null;
@@ -52,12 +56,25 @@ export class DashboardPage implements OnInit {
     { key: 'history', label: 'Historial', icon: 'time-outline' },
   ];
 
-  paymentMethods$: Observable<PaymentMethod[]> = this.paymentMethodService.paymentMethods$();
+  paymentMethods$: Observable<PaymentMethod[]> = this.paymentMethodService.paymentMethods$().pipe(
+    tap(methods => {
+      if (methods.length === 0) {
+        this.selectedCard = null;
+      } else if (!this.selectedCard) {
+        this.selectedCard = methods[0];
+      } else {
+        this.selectedCard = methods.find(m => m.cardTail === this.selectedCard?.cardTail) ?? methods[0];
+      }
+    })
+  );
   totalBalance$: Observable<number> = this.paymentMethods$.pipe(
     map((methods) => methods.reduce((acc, m) => acc + (m.availableBalance || 0), 0))
   );
   displayName$: Observable<string> = this.auth.user$.pipe(
     map((u) => u?.displayName || u?.email?.split('@')[0] || 'Cliente')
+  );
+  recentTransactions$: Observable<FinancialRecord[]> = this.transactionSvc.financialRecords$().pipe(
+    map((records) => records.slice(0, 3))
   );
 
   async ngOnInit(): Promise<void> {
@@ -72,6 +89,10 @@ export class DashboardPage implements OnInit {
 
   handleBalanceToggle(): void {
     this.showBalance = !this.showBalance;
+  }
+
+  selectCard(m: PaymentMethod): void {
+    this.selectedCard = m;
   }
 
   async handleBiometryToggle(): Promise<void> {

@@ -34,23 +34,55 @@ export class TransactionPage implements OnInit {
   paymentMethods$: Observable<PaymentMethod[]> = this.paymentMethodService.paymentMethods$();
   selectedPayment: PaymentMethod | null = null;
 
+  quickAmounts = [20_000, 50_000, 100_000, 200_000];
+  quickVendors = ['Netflix', 'Spotify', 'Amazon', 'Uber', 'Rappi', 'Starbucks'];
+
   formData = this.fb.nonNullable.group({
     paymentMethodId: ['', Validators.required],
     vendor: ['', [Validators.required, Validators.minLength(2)]],
     transactionAmount: [0, [Validators.required, Validators.min(1000)]],
   });
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const methods = await firstValueFrom(this.paymentMethods$);
+    if (methods.length > 0) {
+      this.formData.patchValue({ paymentMethodId: methods[0].id });
+      this.selectedPayment = methods[0];
+    }
+
     this.formData.controls.paymentMethodId.valueChanges.subscribe(async (id) => {
-      const methods = await firstValueFrom(this.paymentMethods$);
-      this.selectedPayment = methods.find((m) => m.id === id) ?? null;
+      const all = await firstValueFrom(this.paymentMethods$);
+      this.selectedPayment = all.find((m) => m.id === id) ?? null;
     });
+  }
+
+  selectCard(m: PaymentMethod): void {
+    this.formData.patchValue({ paymentMethodId: m.id });
+    Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+  }
+
+  setQuickAmount(amount: number): void {
+    this.formData.patchValue({ transactionAmount: amount });
+    Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+  }
+
+  setVendor(vendor: string): void {
+    this.formData.patchValue({ vendor });
+    Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
   }
 
   handleRandomize(): void {
     const { vendor, transactionAmount } = TransactionService.generateRandomVendorTransaction();
     this.formData.patchValue({ vendor, transactionAmount });
     Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+  }
+
+  goBack(): void {
+    this.router.navigateByUrl('/dashboard');
+  }
+
+  trackById(_: number, m: PaymentMethod): string {
+    return m.id ?? m.cardTail;
   }
 
   async handleSubmit(): Promise<void> {
@@ -68,7 +100,7 @@ export class TransactionPage implements OnInit {
 
     const accepted = await this.confirmationSvc.confirm({
       header: 'Confirmar Transacción',
-      message: `¿Realizar transacción de $${transactionAmount.toLocaleString('es-CO')} a ${vendor} con el método •••• ${method.cardTail}?`,
+      message: `¿Realizar pago de $${transactionAmount.toLocaleString('es-CO')} a ${vendor} con la tarjeta •••• ${method.cardTail}?`,
       acceptText: 'Transaccionar',
     });
     if (!accepted) return;
@@ -91,7 +123,7 @@ export class TransactionPage implements OnInit {
         'Procesando transacción...'
       );
       Haptics.notification({ type: NotificationType.Success }).catch(() => {});
-      await this.messageSvc.success(`Transacción exitosa a ${vendor}`);
+      await this.messageSvc.success(`Pago a ${vendor} exitoso`);
       this.alertSvc
         .sendTransactionSuccessAlert(vendor, transactionAmount)
         .catch((e) => console.error('[Push] send', e));
